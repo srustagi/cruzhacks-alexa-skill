@@ -18,7 +18,6 @@ def check_open(dining_hall_name):
 	return True
 
 
-
 def get_meal_time(dining_hall_name):
 	time = datetime.now()
 	time_seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
