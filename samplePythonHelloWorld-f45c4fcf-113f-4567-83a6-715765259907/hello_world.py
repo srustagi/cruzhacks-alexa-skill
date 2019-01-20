@@ -1,165 +1,74 @@
-# -*- coding: utf-8 -*-
-
-# This is a simple Hello World Alexa Skill, built using
-# the implementation of handler classes approach in skill builder.
-import logging
-import shiv
-
-
-from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.utils import is_request_type, is_intent_name
+import dh
+from ask_sdk_model.response import Response
 from ask_sdk_core.handler_input import HandlerInput
 
-from ask_sdk_model.ui import SimpleCard
-from ask_sdk_model import Response
+def lambda_handler(event, context):
+    print("It's in lamda_handler at least", event['request']['type'])
+    if event['request']['type'] == "LaunchRequest":
+        return on_launch(event, context)
+    if event['request']['type'] == "IntentRequest":
+        return intent_router(event, context)
 
-sb = SkillBuilder()
+def on_launch(event, context):
+    session_attributes = {}
+    card_title = ""
+    speech_output = "What menu are you looking for?"
+    reprompt_text = ""
+    should_end_session = False
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+    return build_response(session_attributes, build_speechlet_response(
+        card_title, speech_output, reprompt_text, should_end_session))
 
-def handler(event, context):
-   return true;
-
-class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_request_type("LaunchRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = "Welcome to the Alexa Skills Kit, you can say hello!"
-
-        handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text)).set_should_end_session(
-            False)
-        return handler_input.response_builder.response
+def intent_router(event, context):
+    print("INSIDE intent_router")
+    intent = event['request']['intent']['name']
+    print(intent)
+    if intent == "DiningHallMenuIntent":
+        return Dining_Hall_Menu_Intent(event, context)
 
 
-class HelloWorldIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("HelloWorldIntent")(handler_input)
+def Dining_Hall_Menu_Intent(event, context):
+    print("Dining_Hall intent method")
+    slots = event['request']['intent']['slots']
+    print(slots)
+    # if slots[0].name == "Cowell":
+    #     if slots[1]['name'] is "Dinner":
+    menu = dh.scrape_dining_hall("Cowell/Stevenson", "Dinner")
+    print(str(menu[0]))
+        # menu = dh.scrape_dining_hall("Cowell/Stevenson")
+    card_title="bitch we dont even have a gui"
+    session_attributes ={}
+    speech_output = ""
+    reprompt_text = ""
+    should_end_session = True
+    return build_response(session_attributes, build_speechlet_response(card_title, str(menu[0]), reprompt_text, should_end_session))
+    
+    # response_builder = handler_input.response_builder
+    # return response_builder.speak(menu).response
+    
+def build_speechlet_response(title, output, reprompt_text, should_end_session):
+    return {
+        "outputSpeech": {
+            "type": "PlainText",
+            "text": output
+        },
+        "card": {
+            "type": "Simple",
+            "title": title,
+            "content": output
+        },
+        "reprompt": {
+            "outputSpeech": {
+                "type": "PlainText",
+                "text": reprompt_text
+            }
+        },
+        "shouldEndSession": should_end_session
+    }
 
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = "Hello Python World from Classes!"
-
-        handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text)).set_should_end_session(
-            True)
-        return handler_input.response_builder.response
-
-class DiningHallMenuIntentHandler(AbstractRequestHandler):
-    """Handler for DiningHallMenu Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("DiningHallMenuIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = "Hello Fatass from Lambda (DiningHallMenuIntent)!"
-        # textoutput = self['slots']['slotKey']['value']   
-        # print(textoutput)
-        # print(scrape_dining_hall(textoutput))
-
-        handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text)).set_should_end_session(
-            True)
-        return handler_input.response_builder.response
-
-class HelpIntentHandler(AbstractRequestHandler):
-    """Handler for Help Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("AMAZON.HelpIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = "You can say hello to me!"
-
-        handler_input.response_builder.speak(speech_text).ask(
-            speech_text).set_card(SimpleCard(
-                "Hello World", speech_text))
-        return handler_input.response_builder.response
-
-
-class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                is_intent_name("AMAZON.StopIntent")(handler_input))
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = "Goodbye!"
-
-        handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard("Hello World", speech_text))
-        return handler_input.response_builder.response
-
-
-class FallbackIntentHandler(AbstractRequestHandler):
-    """AMAZON.FallbackIntent is only available in en-US locale.
-    This handler will not be triggered except in that locale,
-    so it is safe to deploy on any locale.
-    """
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("AMAZON.FallbackIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speech_text = (
-            "The Hello World skill can't help you with that.  "
-            "You can say hello!!")
-        reprompt = "You can say hello!!"
-        handler_input.response_builder.speak(speech_text).ask(reprompt)
-        return handler_input.response_builder.response
-
-
-class SessionEndedRequestHandler(AbstractRequestHandler):
-    """Handler for Session End."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_request_type("SessionEndedRequest")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        return handler_input.response_builder.response
-
-
-class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Catch all exception handler, log exception and
-    respond with custom message.
-    """
-    def can_handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> bool
-        return True
-
-    def handle(self, handler_input, exception):
-        # type: (HandlerInput, Exception) -> Response
-        logger.error(exception, exc_info=True)
-
-        speech = "Sorry, there was some problem. Please try again!!"
-        handler_input.response_builder.speak(speech).ask(speech)
-
-        return handler_input.response_builder.response
-
-
-sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(HelloWorldIntentHandler())
-sb.add_request_handler(DiningHallMenuIntentHandler())
-sb.add_request_handler(HelpIntentHandler())
-sb.add_request_handler(CancelOrStopIntentHandler())
-sb.add_request_handler(FallbackIntentHandler())
-sb.add_request_handler(SessionEndedRequestHandler())
-
-sb.add_exception_handler(CatchAllExceptionHandler())
-
-handler = sb.lambda_handler()
+def build_response(session_attributes, speechlet_response):
+    return {
+        "version": "1.0",
+        "sessionAttributes": session_attributes,
+        "response": speechlet_response
+    }
