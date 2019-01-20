@@ -48,8 +48,6 @@ def scrape_dining_hall(dining_hall_name, menu_time = None):
 	non_entrees = ["Natural Bridges", "Hash Brown", "Eggs", "Bisque", "Cheese Pizza", "Pepperoni Pizza", "Oven Roasted", "Muffin", "Donut", "Croissaint", "Condiments", "Okra", "Squash", "Plantains", "Carnitas", "Beans", "Rice", "Cappuccino", "Soup", "Onion Rings", "Fries", "Seasonal Vegetable", "UCSC Bakery French Rolls", "Mousse", "Samosa", "Naan", "Cookie", "Sauce", "Relish"]
 	if not menu_time:
 		menu_time = get_meal_time(dining_hall_name)
-	if not check_open(dining_hall_name):
-		return False
 	else:
 		soup = bs(requests.get(urls[dining_hall_name]).content, 'html.parser')
 		menu_items = soup.findAll("table", {"border": "0", "width": "100%", "height": "100%"})
@@ -67,4 +65,4 @@ def scrape_dining_hall(dining_hall_name, menu_time = None):
 				clean_menu.append(item)
 	return [x for x in results if x not in clean_menu]
 
-print(scrape_dining_hall("9/10"))
+print(scrape_dining_hall("9/10", "Breakfast"))
