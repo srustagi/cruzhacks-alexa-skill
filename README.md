@@ -1,9 +1,6 @@
 # Forest Alexa CruzHacks Submission
 Shivansh Rustagi, Kamil Kisielewicz, Ming Jeng
 
-## Inspiration
-* As busy students with a lot of goals and aspirations, we felt like this would be an application critical to our own success. Time is the only thing that's limited, and having tools to make our lives more efficient opens a pathway to our dream life.
-
 ## What it does
 * Forest is an Amazon Alexa skill with a serverless Python backend integrated with AWS Lambda intended to give UCSC students immediate access to information regarding the dining hall system and their personal accounts. We scraped information from dining hall websites and the UCSC housing portal to implement our application.
 
