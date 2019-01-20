@@ -2,21 +2,6 @@ from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import requests
 
-def check_open(dining_hall_name):
-	time = datetime.now()
-	time_seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
-	weekend = time.weekday() == 5 or time.weekday() == 6
-	if weekend and (dining_hall_name == "Porter/Kresge" or dining_hall_name == "Crown/Merrill"):
-		return False
-	elif weekend:
-		if time_seconds < 25200 or time_seconds > 82800:
-			return False
-	else:
-		if time_seconds < 23400 or time_seconds > 82800:
-			return False
-	return True
-
-
 def get_meal_time(dining_hall_name):
 	time = datetime.now()
 	time_seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
