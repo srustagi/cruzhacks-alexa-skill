@@ -48,6 +48,4 @@ def scrape_dining_hall(dining_hall_name, menu_time = None):
 		for bad in non_entrees:
 			if (bad in item):
 				clean_menu.append(item)
-	return [x for x in results if x not in clean_menu]
-
-print(scrape_dining_hall("9/10", "Breakfast"))
+	return [food for food in results if food not in clean_menu]
