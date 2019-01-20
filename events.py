@@ -2,6 +2,10 @@ import feedparser
 from datetime import datetime as dt
 import dateutil.parser
 
+months = {"":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":}
+days = {"":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, "":, }
+
+
 def scrape_events(date):
 	results = []
 	feed = feedparser.parse("http://rssmix.com/u/8308287/rss.xml")
