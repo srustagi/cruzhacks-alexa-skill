@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import requests
 
-
 def check_open(dining_hall_name):
 	time = datetime.now()
 	time_seconds = (time - time.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
@@ -46,6 +45,7 @@ def scrape_dining_hall(dining_hall_name, menu_time = None):
 		"Crown/Merrill": "https://nutrition.sa.ucsc.edu/menuSamp.asp?locationNum=20&locationName=Crown+Merrill+Dining+Hall&sName=&naFlag=",
 		"Porter/Kresge": "https://nutrition.sa.ucsc.edu/menuSamp.asp?locationNum=15&locationName=Porter+Kresge+Dining+Hall&sName=&naFlag="
 	}
+	non_entrees = ["Natural Bridges", "Hash Brown", "Eggs", "Bisque", "Cheese Pizza", "Pepperoni Pizza", "Oven Roasted", "Muffin", "Donut", "Croissaint", "Condiments", "Okra", "Squash", "Plantains", "Carnitas", "Beans", "Rice", "Cappuccino", "Soup", "Onion Rings", "Fries", "Seasonal Vegetable", "UCSC Bakery French Rolls", "Mousse", "Samosa", "Naan", "Cookie", "Sauce", "Relish"]
 	if not menu_time:
 		menu_time = get_meal_time(dining_hall_name)
 	if not check_open(dining_hall_name):
@@ -60,4 +60,11 @@ def scrape_dining_hall(dining_hall_name, menu_time = None):
 				for label in menu_data:
 					if len(label.string) != 1:
 						results.append(label.string)
-	return results
+	clean_menu = []
+	for item in results:
+		for bad in non_entrees:
+			if (bad in item):
+				clean_menu.append(item)
+	return [x for x in results if x not in clean_menu]
+
+print(scrape_dining_hall("9/10"))
